@@ -10,9 +10,11 @@ import ru.job4j.bmb.services.TelegramBotService;
 
 @SpringBootApplication
 public class Main {
+
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
+
     @Bean
     public CommandLineRunner initTelegramApi(ApplicationContext ctx) {
         return args -> {
