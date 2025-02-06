@@ -36,7 +36,7 @@ public class TgRemoteService extends TelegramLongPollingBot {
             long chatId = update.getMessage().getChatId();
             SendMessage message = new SendMessage();
             message.setChatId(chatId);
-            message.setText("Вы написали: " + messageText);
+            message.setText("Вы написали:  " + messageText);
             try {
                 execute(message);
             } catch (TelegramApiException e) {
