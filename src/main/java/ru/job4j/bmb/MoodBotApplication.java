@@ -9,10 +9,10 @@ import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.telegram.TelegramBotService;
 
 @SpringBootApplication
-public class Main {
+public class MoodBotApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(MoodBotApplication.class, args);
     }
 
     @Bean
