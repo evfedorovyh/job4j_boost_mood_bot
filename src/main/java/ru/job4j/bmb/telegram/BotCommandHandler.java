@@ -1,4 +1,4 @@
-package ru.job4j.bmb.services;
+package ru.job4j.bmb.telegram;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;

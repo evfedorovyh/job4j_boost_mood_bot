@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.services.TelegramBotService;
+import ru.job4j.bmb.telegram.TelegramBotService;
 
 @SpringBootApplication
 public class Main {
