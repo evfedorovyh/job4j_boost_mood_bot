@@ -18,5 +18,3 @@ target
 
 out
 *.log
-
-config/z_override
