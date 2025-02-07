@@ -16,20 +16,6 @@ public class User {
     @Column(name = "chat_id")
     private long chatId;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        User user = (User) o;
-        return clientId == user.clientId && chatId == user.chatId;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(clientId, chatId);
-    }
-
     public User() {
     }
 
@@ -61,5 +47,19 @@ public class User {
 
     public void setChatId(long chatId) {
         this.chatId = chatId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return clientId == user.clientId && chatId == user.chatId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientId, chatId);
     }
 }
