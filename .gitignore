@@ -19,4 +19,4 @@ target
 out
 *.log
 
-config/dev
+config/z_override
