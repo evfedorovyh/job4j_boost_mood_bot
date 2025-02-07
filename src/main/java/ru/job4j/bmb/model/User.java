@@ -62,6 +62,4 @@ public class User {
     public void setChatId(long chatId) {
         this.chatId = chatId;
     }
-
-
 }
