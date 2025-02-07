@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -12,6 +13,7 @@ import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.services.TgRemoteService;
 import ru.job4j.bmb.telegram.TelegramBotService;
 
+@EnableScheduling
 @SpringBootApplication
 public class MoodBotApplication {
 

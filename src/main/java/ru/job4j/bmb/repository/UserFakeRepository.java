@@ -12,7 +12,7 @@ import java.util.Map;
 @Profile("test")
 @Repository
 public class UserFakeRepository implements UserRepository {
-    private Map<Long, User> userMap = new HashMap<>();
+    private final Map<Long, User> userMap = new HashMap<>();
 
     @Override
     public List<User> findAll() {
@@ -24,7 +24,8 @@ public class UserFakeRepository implements UserRepository {
         return userMap.get(clientId);
     }
 
-    public void save(User user) {
+    @Override
+    public void add(User user) {
         userMap.put(user.getClientId(), user);
     }
 }
