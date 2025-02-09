@@ -13,10 +13,6 @@ public class TelegramBotService {
         this.handler = handler;
     }
 
-    public void receive(Content content) {
-        handler.receive(content);
-    }
-
     @PostConstruct
     public void init() {
         System.out.println("Bean is going through @PostConstruct init.");
