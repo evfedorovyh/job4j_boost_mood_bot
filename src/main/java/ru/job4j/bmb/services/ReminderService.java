@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.content.SendContent;
 import ru.job4j.bmb.repository.MoodLogRepository;
+import ru.job4j.bmb.telegram.TgUI;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

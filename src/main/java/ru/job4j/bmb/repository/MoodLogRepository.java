@@ -14,14 +14,12 @@ public interface MoodLogRepository extends CrudRepository<MoodLog, Long> {
 
     List<MoodLog> findAll();
 
-    List<MoodLog> findByUserId(Long userId);
-
-    Stream<MoodLog> findByUserIdOrderByCreatedAtDesc(Long userId);
-
-    List<User> findUsersWhoDidNotVoteToday(long startOfDay, long endOfDay);
-
-    List<MoodLog> findMoodLogsForWeek(Long userId, long weekStart);
-
-    List<MoodLog> findMoodLogsForMonth(Long userId, long monthStart);
+    default List<User> findUsersWhoDidNotVoteToday(long startOfDay, long endOfDay) {
+        return this.findAll().stream()
+                .filter(moodLog -> moodLog.getCreatedAt() <= startOfDay || moodLog.getCreatedAt() >= endOfDay)
+                .map(MoodLog::getUser)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
 }

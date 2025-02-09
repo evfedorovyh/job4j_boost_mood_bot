@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface MoodRepository extends CrudRepository<Mood, Long> {
+
+    @Override
     List<Mood> findAll();
 }

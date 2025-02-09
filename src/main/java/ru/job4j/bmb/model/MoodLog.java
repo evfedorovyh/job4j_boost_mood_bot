@@ -69,7 +69,10 @@ public class MoodLog {
             return false;
         }
         MoodLog moodLog = (MoodLog) o;
-        return createdAt == moodLog.createdAt && Objects.equals(id, moodLog.id) && Objects.equals(user, moodLog.user) && Objects.equals(mood, moodLog.mood);
+        return createdAt == moodLog.createdAt
+                && Objects.equals(id, moodLog.id)
+                && Objects.equals(user, moodLog.user)
+                && Objects.equals(mood, moodLog.mood);
     }
 
     @Override

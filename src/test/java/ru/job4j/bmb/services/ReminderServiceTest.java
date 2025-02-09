@@ -1,7 +1,5 @@
 package ru.job4j.bmb.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import ru.job4j.bmb.content.Content;
 import ru.job4j.bmb.content.SendContent;
@@ -10,6 +8,7 @@ import ru.job4j.bmb.model.MoodLog;
 import ru.job4j.bmb.model.User;
 import ru.job4j.bmb.repository.MoodFakeRepository;
 import ru.job4j.bmb.repository.MoodLogFakeRepository;
+import ru.job4j.bmb.telegram.TgUI;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
