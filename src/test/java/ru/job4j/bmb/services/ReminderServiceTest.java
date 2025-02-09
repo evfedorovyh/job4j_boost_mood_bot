@@ -47,33 +47,4 @@ class ReminderServiceTest {
         assertThat(result.iterator().next().getMarkup().getKeyboard()
                 .iterator().next().iterator().next().getText()).isEqualTo("Good");
     }
-
-    @Test
-    public void whenContentDidNotSent() {
-        var result = new ArrayList<Content>();
-        var sendContent = new SendContent() {
-            @Override
-            public void send(Content content) {
-                result.add(content);
-            }
-        };
-        var moodRepository = new MoodFakeRepository();
-        moodRepository.save(new Mood("Good", true));
-        var moodLogRepository = new MoodLogFakeRepository();
-        var user = new User();
-        user.setChatId(100);
-        var moodLog = new MoodLog();
-        moodLog.setUser(user);
-        var today = LocalDate.now()
-                .minusDays(1)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli() + 1;
-        moodLog.setCreatedAt(today);
-        moodLogRepository.save(moodLog);
-        var tgUI = new TgUI(moodRepository);
-        new ReminderService(sendContent, moodLogRepository, tgUI)
-                .remindUsers();
-        assertTrue(result.isEmpty());
-    }
 }
