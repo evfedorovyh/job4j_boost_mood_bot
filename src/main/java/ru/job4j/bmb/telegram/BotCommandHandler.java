@@ -26,16 +26,14 @@ public class BotCommandHandler {
     }
 
     Optional<Content> commands(Message message) {
-        if (message.hasText()) {
-           if ("/start".equals(message.getText())) {
-               return handleStartCommand(message.getChatId(), message.getFrom().getId());
-           } else if ("/week_mood_log".equals(message.getText())) {
-               return moodService.weekMoodLogCommand(message.getChatId(), message.getFrom().getId());
-           } else if ("/month_mood_log".equals(message.getText())) {
-               return moodService.monthMoodLogCommand(message.getChatId(), message.getFrom().getId());
-           } else if ("/award".equals(message.getText())) {
-               return moodService.awards(message.getChatId(), message.getFrom().getId());
-           }
+        if ("/start".equals(message.getText())) {
+           return handleStartCommand(message.getChatId(), message.getFrom().getId());
+        } else if ("/week_mood_log".equals(message.getText())) {
+           return moodService.weekMoodLogCommand(message.getChatId(), message.getFrom().getId());
+        } else if ("/month_mood_log".equals(message.getText())) {
+           return moodService.monthMoodLogCommand(message.getChatId(), message.getFrom().getId());
+        } else if ("/award".equals(message.getText())) {
+           return moodService.awards(message.getChatId(), message.getFrom().getId());
         }
         return Optional.empty();
     }
@@ -47,11 +45,13 @@ public class BotCommandHandler {
     }
 
     private Optional<Content> handleStartCommand(long chatId, Long clientId) {
-        var user = new User();
-        user.setClientId(clientId);
-        user.setChatId(chatId);
-        userRepository.save(user);
-        var content = new Content(user.getChatId());
+        if (!userRepository.existsById(clientId)) {
+            var user = new User();
+            user.setClientId(clientId);
+            user.setChatId(chatId);
+            userRepository.save(user);
+        }
+        var content = new Content(chatId);
         content.setText("Как настроение?");
         content.setMarkup(tgUI.buildButtons());
         return Optional.of(content);

@@ -1,6 +1,5 @@
 package ru.job4j.bmb.content;
 
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
