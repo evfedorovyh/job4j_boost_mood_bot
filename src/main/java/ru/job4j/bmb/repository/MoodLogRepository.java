@@ -13,13 +13,4 @@ import java.util.stream.Stream;
 public interface MoodLogRepository extends CrudRepository<MoodLog, Long> {
 
     List<MoodLog> findAll();
-
-    default List<User> findUsersWhoDidNotVoteToday(long startOfDay, long endOfDay) {
-        return this.findAll().stream()
-                .filter(moodLog -> moodLog.getCreatedAt() <= startOfDay || moodLog.getCreatedAt() >= endOfDay)
-                .map(MoodLog::getUser)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
 }

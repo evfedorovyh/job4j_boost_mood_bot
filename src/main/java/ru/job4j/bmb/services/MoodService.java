@@ -1,13 +1,18 @@
 package ru.job4j.bmb.services;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.model.MoodLog;
-import ru.job4j.bmb.model.User;
+import ru.job4j.bmb.model.*;
 import ru.job4j.bmb.repository.AchievementRepository;
 import ru.job4j.bmb.repository.MoodLogRepository;
+import ru.job4j.bmb.repository.MoodRepository;
 import ru.job4j.bmb.repository.UserRepository;
+import ru.job4j.bmb.repository.MoodContentRepository;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -15,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class MoodService {
+    private final MoodContentRepository moodContentRepository;
+    private final MoodRepository moodRepository;
     private final MoodLogRepository moodLogRepository;
     private final RecommendationEngine recommendationEngine;
     private final UserRepository userRepository;
@@ -22,20 +29,42 @@ public class MoodService {
     private final DateTimeFormatter formatter = DateTimeFormatter
             .ofPattern("dd-MM-yyyy HH:mm")
             .withZone(ZoneId.systemDefault());
+    private final ApplicationEventPublisher publisher;
 
-    public MoodService(MoodLogRepository moodLogRepository,
+    public MoodService(MoodContentRepository moodContentRepository,
+                       MoodRepository moodRepository,
+                       MoodLogRepository moodLogRepository,
                        RecommendationEngine recommendationEngine,
                        UserRepository userRepository,
-                       AchievementRepository achievementRepository) {
+                       AchievementRepository achievementRepository,
+                       ApplicationEventPublisher publisher) {
         this.moodLogRepository = moodLogRepository;
         this.recommendationEngine = recommendationEngine;
         this.userRepository = userRepository;
         this.achievementRepository = achievementRepository;
+        this.publisher = publisher;
+        this.moodRepository = moodRepository;
+        this.moodContentRepository = moodContentRepository;
     }
 
     public Content chooseMood(User user, Long moodId) {
-        return recommendationEngine.recommendFor(user.getChatId(), moodId);
+        MoodLog moodLog = new MoodLog();
+        moodLog.setUser(user);
+        moodLog.setMood(moodRepository.findAll().get(moodId.intValue() - 1));
+        moodLog.setCreatedAt(LocalDateTime.now()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli());
+        moodLogRepository.save(moodLog);
+        publisher.publishEvent(new UserEvent(this, user));
+        Content content = new Content(user.getChatId());
+        content.setText(moodContentRepository.findAll().get(moodId.intValue() - 1).getText());
+        return content;
     }
+
+//    public Content chooseMood(User user, Long moodId) {
+//        return recommendationEngine.recommendFor(user.getChatId(), moodId);
+//    }
 
     public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
         var content = new Content(chatId);

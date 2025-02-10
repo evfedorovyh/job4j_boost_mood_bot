@@ -39,15 +39,15 @@ public class BotCommandHandler {
 
     Optional<Content> handleCallback(CallbackQuery callback) {
         var moodId = Long.valueOf(callback.getData());
-        var user = userRepository.findById(callback.getFrom().getId());
+        var user = userRepository.findAll().stream().filter(user1 -> user1.getClientId() == callback.getFrom().getId()).findFirst();
         return user.map(value -> moodService.chooseMood(value, moodId));
     }
 
     private Optional<Content> handleStartCommand(long chatId, Long clientId) {
-        if (!userRepository.existsById(clientId)) {
-            var user = new User();
-            user.setClientId(clientId);
-            user.setChatId(chatId);
+        var user = new User();
+        user.setClientId(clientId);
+        user.setChatId(chatId);
+        if (!userRepository.findAll().contains(user)) {
             userRepository.save(user);
         }
         var content = new Content(chatId);

@@ -13,13 +13,14 @@ import java.time.ZoneId;
 @Service
 public class ReminderService {
     private final SendContent sendContent;
-    private final MoodLogRepository moodLogRepository;
+    private final MoodLogService moodLogService;
     private final TgUI tgUI;
 
     public ReminderService(SendContent sendContent,
-                           MoodLogRepository moodLogRepository, TgUI tgUI) {
+                           MoodLogService moodLogService,
+                           TgUI tgUI) {
         this.sendContent = sendContent;
-        this.moodLogRepository = moodLogRepository;
+        this.moodLogService = moodLogService;
         this.tgUI = tgUI;
     }
 
@@ -34,7 +35,7 @@ public class ReminderService {
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli() - 1;
-        for (var user : moodLogRepository.findUsersWhoDidNotVoteToday(startOfDay, endOfDay)) {
+        for (var user : moodLogService.findUsersWhoDidNotVoteToday(startOfDay, endOfDay)) {
             var content = new Content(user.getChatId());
             content.setText("Как настроение?");
             content.setMarkup(tgUI.buildButtons());
