@@ -62,10 +62,6 @@ public class MoodService {
         return content;
     }
 
-//    public Content chooseMood(User user, Long moodId) {
-//        return recommendationEngine.recommendFor(user.getChatId(), moodId);
-//    }
-
     public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
         var content = new Content(chatId);
         return Optional.of(content);
