@@ -20,3 +20,5 @@ out
 *.log
 
 z_override
+
+*.db
