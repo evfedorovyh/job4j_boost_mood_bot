@@ -8,8 +8,11 @@ import ru.job4j.bmb.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MoodLogService {
@@ -53,29 +56,29 @@ public class MoodLogService {
         return days;
     }
 
-//    public List<MoodLog> findByUserId(Long userId) {
-//        return moodLogRepository.findAll().stream()
-//                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public Stream<MoodLog> findByUserIdOrderByCreatedAtDesc(Long userId) {
-//        return moodLogRepository.findAll().stream()
-//                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-//                .sorted(Comparator.comparing(MoodLog::getCreatedAt).reversed());
-//    }
-//
-//    public List<MoodLog> findMoodLogsForWeek(Long userId, long weekStart) {
-//        return moodLogRepository.findAll().stream()
-//                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-//                .filter(moodLog -> moodLog.getCreatedAt() >= weekStart)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<MoodLog> findMoodLogsForMonth(Long userId, long monthStart) {
-//        return moodLogRepository.findAll().stream()
-//                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
-//                .filter(moodLog -> moodLog.getCreatedAt() >= monthStart)
-//                .collect(Collectors.toList());
-//    }
+    public List<MoodLog> findByUserId(Long userId) {
+        return moodLogRepository.findAll().stream()
+                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    public Stream<MoodLog> findByUserIdOrderByCreatedAtDesc(Long userId) {
+        return moodLogRepository.findAll().stream()
+                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
+                .sorted(Comparator.comparing(MoodLog::getCreatedAt).reversed());
+    }
+
+    public List<MoodLog> findMoodLogsForWeek(Long userId, long weekStart) {
+        return moodLogRepository.findAll().stream()
+                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
+                .filter(moodLog -> moodLog.getCreatedAt() >= weekStart)
+                .collect(Collectors.toList());
+    }
+
+    public List<MoodLog> findMoodLogsForMonth(Long userId, long monthStart) {
+        return moodLogRepository.findAll().stream()
+                .filter(moodLog -> moodLog.getUser().getId().equals(userId))
+                .filter(moodLog -> moodLog.getCreatedAt() >= monthStart)
+                .collect(Collectors.toList());
+    }
 }
