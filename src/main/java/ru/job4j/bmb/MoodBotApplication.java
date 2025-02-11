@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -16,7 +17,10 @@ import ru.job4j.bmb.model.MoodContent;
 import ru.job4j.bmb.repository.AwardRepository;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.MoodRepository;
-import ru.job4j.bmb.telegram.TelegramBotService;
+import ru.job4j.bmb.telegram.OnFakeCondition;
+import ru.job4j.bmb.telegram.OnRealCondition;
+import ru.job4j.bmb.telegram.TelegramBotServiceFake;
+import ru.job4j.bmb.telegram.TelegramBotServiceReal;
 
 import java.util.ArrayList;
 
@@ -30,9 +34,25 @@ public class MoodBotApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+    @Conditional(OnRealCondition.class)
+    public CommandLineRunner commandLineRunnerReal(ApplicationContext ctx) {
         return args -> {
-            var bot = ctx.getBean(TelegramBotService.class);
+            var bot = ctx.getBean(TelegramBotServiceReal.class);
+            var botsApi = new TelegramBotsApi(DefaultBotSession.class);
+            try {
+                botsApi.registerBot(bot);
+                System.out.println("Бот успешно зарегистрирован");
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        };
+    }
+
+    @Bean
+    @Conditional(OnFakeCondition.class)
+    public CommandLineRunner commandLineRunnerFake(ApplicationContext ctx) {
+        return args -> {
+            var bot = ctx.getBean(TelegramBotServiceFake.class);
             var botsApi = new TelegramBotsApi(DefaultBotSession.class);
             try {
                 botsApi.registerBot(bot);

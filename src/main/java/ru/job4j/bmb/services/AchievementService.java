@@ -3,13 +3,13 @@ package ru.job4j.bmb.services;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
+import ru.job4j.bmb.content.SendContent;
 import ru.job4j.bmb.model.Achievement;
 import ru.job4j.bmb.model.Award;
 import ru.job4j.bmb.model.UserEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.bmb.repository.AchievementRepository;
 import ru.job4j.bmb.repository.AwardRepository;
-import ru.job4j.bmb.telegram.TelegramBotService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,16 +20,16 @@ public class AchievementService implements ApplicationListener<UserEvent> {
     private final MoodLogService moodLogService;
     private final AchievementRepository achievementRepository;
     private final AwardRepository awardRepository;
-    private final TelegramBotService telegramBotService;
+    private final SendContent sendContent;
 
     public AchievementService(MoodLogService moodLogService,
                               AchievementRepository achievementRepository,
                               AwardRepository awardRepository,
-                              TelegramBotService telegramBotService) {
+                              SendContent sendContent) {
         this.moodLogService = moodLogService;
         this.achievementRepository = achievementRepository;
         this.awardRepository = awardRepository;
-        this.telegramBotService = telegramBotService;
+        this.sendContent = sendContent;
     }
 
     @Transactional
@@ -52,7 +52,7 @@ public class AchievementService implements ApplicationListener<UserEvent> {
             achievement.setCreateAt(now);
             achievementRepository.save(achievement);
             content.setText(awardIs.get().getDescription());
-            telegramBotService.send(content);
+            sendContent.send(content);
         }
     }
 }
