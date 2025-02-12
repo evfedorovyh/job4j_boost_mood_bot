@@ -1,31 +1,26 @@
 package ru.job4j.bmb.services;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.content.SendContent;
-import ru.job4j.bmb.repository.MoodLogRepository;
 import ru.job4j.bmb.telegram.TgUI;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReminderService {
-    private final SendContent sendContent;
     private final MoodLogService moodLogService;
     private final TgUI tgUI;
 
-    public ReminderService(SendContent sendContent,
-                           MoodLogService moodLogService,
+    public ReminderService(MoodLogService moodLogService,
                            TgUI tgUI) {
-        this.sendContent = sendContent;
         this.moodLogService = moodLogService;
         this.tgUI = tgUI;
     }
 
-    @Scheduled(fixedRateString = "${recommendation.alert.period}")
-    public void remindUsers() {
+    public List<Content> reminderForAllUsers() {
+        List<Content> listContent = new ArrayList<>();
         var startOfDay = LocalDate.now()
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
@@ -39,7 +34,8 @@ public class ReminderService {
             var content = new Content(user.getChatId());
             content.setText("Как настроение?");
             content.setMarkup(tgUI.buildButtons());
-            sendContent.send(content);
+            listContent.add(content);
         }
+        return listContent;
     }
 }

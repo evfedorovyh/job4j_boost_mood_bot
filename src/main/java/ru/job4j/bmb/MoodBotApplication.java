@@ -17,10 +17,7 @@ import ru.job4j.bmb.model.MoodContent;
 import ru.job4j.bmb.repository.AwardRepository;
 import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.MoodRepository;
-import ru.job4j.bmb.telegram.OnFakeCondition;
-import ru.job4j.bmb.telegram.OnRealCondition;
-import ru.job4j.bmb.telegram.TelegramBotServiceFake;
-import ru.job4j.bmb.telegram.TelegramBotServiceReal;
+import ru.job4j.bmb.telegram.*;
 
 import java.util.ArrayList;
 

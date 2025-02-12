@@ -10,10 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import ru.job4j.bmb.model.Mood;
 import ru.job4j.bmb.model.MoodLog;
 import ru.job4j.bmb.model.User;
-import ru.job4j.bmb.repository.MoodLogFakeRepository;
-import ru.job4j.bmb.repository.MoodLogRepository;
-import ru.job4j.bmb.repository.UserFakeRepository;
-import ru.job4j.bmb.repository.UserRepository;
+import ru.job4j.bmb.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

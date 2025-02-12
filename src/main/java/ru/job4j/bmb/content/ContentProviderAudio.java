@@ -9,9 +9,13 @@ import java.io.File;
 public class ContentProviderAudio implements ContentProvider {
 
     @Override
-    public Content byMood(Long chatId, Long moodId) {
+    public Content byMood(Long chatId, boolean goodMood) {
         var content = new Content(chatId);
-        content.setAudio(new InputFile(new File("./audio/music.mp3")));
+        if (goodMood) {
+            content.setAudio(new InputFile(new File("./files/audio/1.mp3")));
+        } else {
+            content.setAudio(new InputFile(new File("./files/audio/2.mp3")));
+        }
         return content;
     }
 }

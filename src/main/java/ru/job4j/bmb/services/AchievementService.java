@@ -10,7 +10,6 @@ import ru.job4j.bmb.model.UserEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.bmb.repository.AchievementRepository;
 import ru.job4j.bmb.repository.AwardRepository;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
