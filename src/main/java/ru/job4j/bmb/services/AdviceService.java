@@ -11,26 +11,35 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class RecommendationEngine {
+public class AdviceService {
+    private final ContentProviderAudio contentProviderAudio;
+    private final ContentProviderImage contentProviderImage;
+    private final ContentProviderText contentProviderText;
     private final List<ContentProvider> contents;
     private final UserAdviceRepository userAdviceRepository;
     private final MoodLogService moodLogService;
     private static final Random RND = new Random(System.currentTimeMillis());
 
-    public RecommendationEngine(List<ContentProvider> contents,
-                                UserAdviceRepository userAdviceRepository,
-                                MoodLogService moodLogService) {
+    public AdviceService(ContentProviderAudio contentProviderAudio,
+                         ContentProviderImage contentProviderImage,
+                         ContentProviderText contentProviderText,
+                         List<ContentProvider> contents,
+                         UserAdviceRepository userAdviceRepository,
+                         MoodLogService moodLogService) {
+        this.contentProviderAudio = contentProviderAudio;
+        this.contentProviderImage = contentProviderImage;
+        this.contentProviderText = contentProviderText;
         this.contents = contents;
         this.userAdviceRepository = userAdviceRepository;
         this.moodLogService = moodLogService;
     }
 
-    public Content adviceForUser(Long chatId, boolean goodMood) {
-        contents.add(new ContentProviderText());
-        contents.add(new ContentProviderAudio());
-        contents.add(new ContentProviderImage());
+    public Content adviceForUser(User user, boolean goodMood) {
+        contents.add(contentProviderImage);
+        contents.add(contentProviderText);
+        contents.add(contentProviderAudio);
         var index = RND.nextInt(0, contents.size());
-        return contents.get(index).byMood(chatId, goodMood);
+        return contents.get(index).byMood(user, goodMood);
     }
 
     public void setAdvice(User user, boolean getAdvice) {
@@ -46,7 +55,7 @@ public class RecommendationEngine {
         List<Content> listContent = new ArrayList<>();
         for (var userAdvice : userAdviceRepository.findAll()) {
             if (userAdvice.getAdvice()) {
-                listContent.add(adviceForUser(userAdvice.getUser().getChatId(),
+                listContent.add(adviceForUser(userAdvice.getUser(),
                         moodLogService.getLastMood(userAdvice.getUser())));
             }
         }
