@@ -54,7 +54,7 @@ public class MoodBotApplication {
     @Conditional(OnFakeCondition.class)
     public CommandLineRunner commandLineRunnerFake(ApplicationContext ctx) {
         return args -> {
-            var bot = ctx.getBean(TelegramBotServiceFake.class);
+            ctx.getBean(TelegramBotServiceFake.class);
         };
     }
 
@@ -63,8 +63,8 @@ public class MoodBotApplication {
                                            MoodContentRepository moodContentRepository,
                                            AwardRepository awardRepository) {
         return args -> {
-            var moods = moodRepository.findAll();
-            if (!moods.isEmpty()) {
+            var moodIs = moodRepository.findAll();
+            if (!moodIs.isEmpty()) {
                 return;
             }
             var data = new ArrayList<MoodContent>();
@@ -78,10 +78,13 @@ public class MoodBotApplication {
                     new Mood("В состоянии комфорта \u263A\uFE0F", true),
                             "Отлично! Вы чувствуете себя уютно и спокойно."));
                     data.add(new MoodContent(
+                    new Mood("Вдохновенное настроение \ud83d\udca1", true),
+                    "Потрясающе! Вы полны идей и энергии для их реализации."));
+                    data.add(new MoodContent(
                     new Mood("Легкое волнение \ud83c\udf88", true),
                             "Замечательно! Немного волнения добавляет жизни краски."));
                     data.add(new MoodContent(
-                    new Mood("Сосредоточенное настроение \ud83c\udfaf", true),
+                    new Mood("Сосредоточенное настроение \ud83c\udfaf", false),
                             "Хорошо! Ваш фокус на высоте, используйте это время эффективно."));
                     data.add(new MoodContent(
                     new Mood("Тревожное настроение \ud83d\ude1f", false),
@@ -93,13 +96,14 @@ public class MoodBotApplication {
                     new Mood("Усталое настроение \ud83d\ude34", false),
                             "Похоже, вам нужен отдых. Позаботьтесь о себе и отдохните."));
                     data.add(new MoodContent(
-                    new Mood("Вдохновенное настроение \ud83d\udca1", false),
-                            "Потрясающе! Вы полны идей и энергии для их реализации."));
-                    data.add(new MoodContent(
                     new Mood("Раздраженное настроение \ud83d\ude20", false),
                             "Попробуйте успокоиться и найти причину раздражения, чтобы исправить ситуацию."));
             moodRepository.saveAll(data.stream().map(MoodContent::getMood).toList());
             moodContentRepository.saveAll(data);
+            var awardIs = awardRepository.findAll();
+            if (!awardIs.isEmpty()) {
+                return;
+            }
             var awards = new ArrayList<Award>();
             awards.add(new Award("Смайлик дня", "За 1 день хорошего настроения."
                     + "Награда: Веселый смайлик или стикер, отправленный пользователю в качестве поощрения.", 1));

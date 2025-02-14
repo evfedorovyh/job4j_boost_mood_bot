@@ -31,7 +31,9 @@ public class MoodService {
     }
 
     public Mood findMood(Long moodId) {
-        return  moodRepository.findAll().get((moodId.intValue() - 1));
+        return  moodRepository.findAll().stream()
+                .filter(mood -> moodId.equals(mood.getId()))
+                .findFirst().orElse(null);
     }
 
     public Optional<Content> chooseMood(User user, Mood mood) {
