@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface AwardRepository extends CrudRepository<Award, Long> {
+
     List<Award> findAll();
 }

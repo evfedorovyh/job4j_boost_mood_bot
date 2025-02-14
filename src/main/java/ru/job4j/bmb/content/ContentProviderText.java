@@ -1,6 +1,7 @@
 package ru.job4j.bmb.content;
 
 import org.springframework.stereotype.Component;
+import ru.job4j.bmb.model.User;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public class ContentProviderText implements ContentProvider {
     private static final Random RND = new Random(System.currentTimeMillis());
 
     @Override
-    public Content byMood(Long chatId, boolean goodMood) {
-        var content = new Content(chatId);
+    public Content byMood(User user, boolean goodMood) {
+        var content = new Content(user.getChatId());
         List<String> listStr = new ArrayList<>();
         try (Scanner sc = new Scanner(new File("./files/text/quotes.txt"))) {
             while (sc.hasNext()) {

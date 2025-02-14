@@ -10,22 +10,23 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import static ru.job4j.bmb.MoodBotApplication.DATE_TIME_FORMATTER;
 
 @Service
 public class MoodLogService {
-    UserRepository userRepository;
-    MoodLogRepository moodLogRepository;
-    private final DateTimeFormatter formatter = DateTimeFormatter
-            .ofPattern("dd-MM-yyyy HH:mm")
-            .withZone(ZoneId.systemDefault());
+    private final UserRepository userRepository;
+    private final MoodLogRepository moodLogRepository;
 
     public MoodLogService(MoodLogRepository moodLogRepository,
                           UserRepository userRepository) {
         this.moodLogRepository = moodLogRepository;
         this.userRepository = userRepository;
+    }
+
+    public void saveMoodLog(MoodLog moodLog) {
+        moodLogRepository.save(moodLog);
     }
 
     public List<User> findUsersWhoDidNotVoteToday(long startOfDay, long endOfDay) {
@@ -66,15 +67,15 @@ public class MoodLogService {
         return lastMoodLog.map(moodLog -> moodLog.getMood().isGood()).orElse(true);
     }
 
-    public Optional<Content> weekMoodLogCommand(long chatId, Long clientId) {
-        Content content = new Content(chatId);
+    public Optional<Content> weekMoodLogCommand(User user) {
+        Content content = new Content(user.getChatId());
         long weekStart = LocalDate.now()
                 .minusWeeks(1)
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli();
         List<MoodLog> listMoodLog = moodLogRepository.findAll().stream()
-                .filter(moodLog -> moodLog.getUser().getClientId() == clientId)
+                .filter(moodLog -> moodLog.getUser().equals(user))
                 .filter(moodLog -> moodLog.getCreatedAt() >= weekStart)
                 .toList();
         String stringLogs = formatMoodLogs(listMoodLog, "Лог настроений за неделю");
@@ -82,15 +83,15 @@ public class MoodLogService {
         return Optional.of(content);
     }
 
-    public Optional<Content> monthMoodLogCommand(long chatId, Long clientId) {
-        Content content = new Content(chatId);
+    public Optional<Content> monthMoodLogCommand(User user) {
+        Content content = new Content(user.getChatId());
         long weekStart = LocalDate.now()
                 .minusMonths(1)
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli();
         List<MoodLog> listMoodLog = moodLogRepository.findAll().stream()
-                .filter(moodLog -> moodLog.getUser().getClientId() == clientId)
+                .filter(moodLog -> moodLog.getUser().equals(user))
                 .filter(moodLog -> moodLog.getCreatedAt() >= weekStart)
                 .toList();
         String stringLogs = formatMoodLogs(listMoodLog, "Лог настроений за месяц");
@@ -100,11 +101,11 @@ public class MoodLogService {
 
     private String formatMoodLogs(List<MoodLog> logs, String title) {
         if (logs.isEmpty()) {
-            return title + ":\nNo mood logs found.";
+            return String.format("%s:\nNo mood logs found.", title);
         }
-        var sb = new StringBuilder(title + ":\n\n");
+        var sb = new StringBuilder(title).append(":\n\n");
         logs.forEach(log -> {
-            String formattedDate = formatter.format(Instant.ofEpochMilli(log.getCreatedAt()));
+            String formattedDate = DATE_TIME_FORMATTER.format(Instant.ofEpochMilli(log.getCreatedAt()));
             sb.append(formattedDate).append(": ").append(log.getMood().getText()).append("\n\n");
         });
         return sb.toString();

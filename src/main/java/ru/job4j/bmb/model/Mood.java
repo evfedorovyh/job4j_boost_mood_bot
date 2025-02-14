@@ -18,6 +18,10 @@ public class Mood {
     public Mood() {
     }
 
+    public Mood(Long id) {
+        this.id = id;
+    }
+
     public Mood(String text, boolean good) {
         this.text = text;
         this.good = good;

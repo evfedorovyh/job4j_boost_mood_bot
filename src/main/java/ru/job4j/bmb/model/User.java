@@ -19,6 +19,11 @@ public class User {
     public User() {
     }
 
+    public User(long clientId, long chatId) {
+        this.clientId = clientId;
+        this.chatId = chatId;
+    }
+
     public User(Long id, long clientId, long chatId) {
         this.id = id;
         this.clientId = clientId;

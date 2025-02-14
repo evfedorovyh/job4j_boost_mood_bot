@@ -20,7 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ContextConfiguration(classes = {User.class, MoodLogFakeRepository.class, UserFakeRepository.class, MoodLogService.class})
+@ContextConfiguration(classes = {UserService.class, MoodLogFakeRepository.class, UserFakeRepository.class, MoodLogService.class})
 class MoodLogServiceTest {
     @Autowired
     @Qualifier("userFakeRepository")

@@ -1,6 +1,8 @@
 package ru.job4j.bmb.content;
 
+import ru.job4j.bmb.model.User;
+
 public interface ContentProvider {
 
-    Content byMood(Long chatId, boolean goodMood);
+    Content byMood(User user, boolean goodMood);
 }

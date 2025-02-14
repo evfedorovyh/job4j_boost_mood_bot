@@ -19,12 +19,17 @@ import ru.job4j.bmb.repository.MoodContentRepository;
 import ru.job4j.bmb.repository.MoodRepository;
 import ru.job4j.bmb.telegram.*;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @EnableAspectJAutoProxy
 @EnableScheduling
 @SpringBootApplication
 public class MoodBotApplication {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+            .ofPattern("dd-MM-yyyy HH:mm")
+            .withZone(ZoneId.systemDefault());
 
     public static void main(String[] args) {
         SpringApplication.run(MoodBotApplication.class, args);
@@ -49,14 +54,7 @@ public class MoodBotApplication {
     @Conditional(OnFakeCondition.class)
     public CommandLineRunner commandLineRunnerFake(ApplicationContext ctx) {
         return args -> {
-            var bot = ctx.getBean(TelegramBotServiceFake.class);
-            var botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            try {
-                botsApi.registerBot(bot);
-                System.out.println("Бот успешно зарегистрирован");
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            ctx.getBean(TelegramBotServiceFake.class);
         };
     }
 

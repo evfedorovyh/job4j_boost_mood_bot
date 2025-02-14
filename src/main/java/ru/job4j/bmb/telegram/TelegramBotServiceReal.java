@@ -1,9 +1,11 @@
 package ru.job4j.bmb.telegram;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,50 +13,67 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.job4j.bmb.content.Content;
+import ru.job4j.bmb.content.GetRequest;
 import ru.job4j.bmb.content.SendContent;
 import ru.job4j.bmb.content.SendContentException;
-import ru.job4j.bmb.services.RecommendationEngine;
+import ru.job4j.bmb.model.Request;
+import ru.job4j.bmb.model.UserEvent;
+import ru.job4j.bmb.services.AchievementService;
+import ru.job4j.bmb.services.AdviceService;
 import ru.job4j.bmb.services.ReminderService;
 import java.util.List;
 
 @Service
 @Conditional(OnRealCondition.class)
-public class TelegramBotServiceReal extends TelegramLongPollingBot implements SendContent {
+public class TelegramBotServiceReal extends TelegramLongPollingBot
+        implements SendContent, GetRequest, ApplicationListener<UserEvent> {
     private final BotCommandHandler handler;
     private final String botName;
-    private final RecommendationEngine recommendationEngine;
+    private final AdviceService adviceService;
     private final ReminderService reminderService;
+    private final AchievementService achievementService;
 
     public TelegramBotServiceReal(@Value("${telegram.bot.name}") String botName,
                                   @Value("${telegram.bot.token}") String botToken,
                                   BotCommandHandler handler,
-                                  RecommendationEngine recommendationEngine,
-                                  ReminderService reminderService) {
+                                  AdviceService adviceService,
+                                  ReminderService reminderService,
+                                  AchievementService achievementService) {
         super(botToken);
         this.handler = handler;
         this.botName = botName;
-        this.recommendationEngine = recommendationEngine;
+        this.adviceService = adviceService;
         this.reminderService = reminderService;
+        this.achievementService = achievementService;
+    }
+
+    @Override
+    public void getRequest(Request request) {
+        if (request.getMoodId() != null) {
+            handler.handleCallback(request)
+                    .ifPresent(this::sendContent);
+        } else if (request.getCommand() != null) {
+            handler.handleCommands(request)
+                    .ifPresent(this::sendContent);
+        }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasCallbackQuery()) {
-            handler.handleCallback(update.getCallbackQuery())
-                    .ifPresent(this::send);
+            var request = new Request(update.getCallbackQuery().getFrom().getId());
+            request.setMoodId(Long.valueOf(update.getCallbackQuery().getData()));
+            getRequest(request);
         } else if (update.hasMessage() && update.getMessage().getText() != null) {
-            handler.commands(update.getMessage())
-                    .ifPresent(this::send);
+            var request = new Request(update.getMessage().getFrom().getId(),
+                    update.getMessage().getChatId());
+            request.setCommand(update.getMessage().getText());
+            getRequest(request);
         }
     }
 
     @Override
-    public String getBotUsername() {
-        return botName;
-    }
-
-    @Override
-    public void send(Content content) {
+    public void sendContent(Content content) {
         try {
             if (content.getAudio() != null) {
                 var sendAudio = new SendAudio();
@@ -87,11 +106,18 @@ public class TelegramBotServiceReal extends TelegramLongPollingBot implements Se
         }
     }
 
+    @Transactional
+    @Override
+    public void onApplicationEvent(UserEvent event) {
+        achievementService.setAchievement(event.getUser())
+                .ifPresent(this::sendContent);
+    }
+
     @Scheduled(cron = "${send.advice.time}", zone = "Europe/Moscow")
     public void sendAdvice() {
-        List<Content> listContent = recommendationEngine.advicesForAllUsers();
+        List<Content> listContent = adviceService.advicesForAllUsers();
         for (var content : listContent) {
-                send(content);
+                sendContent(content);
         }
     }
 
@@ -99,7 +125,12 @@ public class TelegramBotServiceReal extends TelegramLongPollingBot implements Se
     public void sendRemainder() {
         List<Content> listContent = reminderService.reminderForAllUsers();
         for (var content : listContent) {
-            send(content);
+            sendContent(content);
         }
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botName;
     }
 }
