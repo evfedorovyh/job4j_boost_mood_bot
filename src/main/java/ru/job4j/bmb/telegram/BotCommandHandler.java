@@ -1,8 +1,9 @@
 package ru.job4j.bmb.telegram;
 
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.model.Request;
 import ru.job4j.bmb.services.*;
 import java.util.Optional;
 
@@ -29,14 +30,14 @@ public class BotCommandHandler {
         this.achievementService = achievementService;
     }
 
-    public Optional<Content> handleCommands(Request request) {
-        var content = new Content(request.getClientId());
-        String textCommand = request.getCommand();
-        var user = userService.findUser(request.getClientId());
+    public Optional<Content> handleCommands(Message message) {
+        var content = new Content(message.getChatId());
+        String textCommand = message.getText();
+        var user = userService.findUser(message.getFrom().getId());
         if ("/start".equals(textCommand)) {
             if (user == null) {
-                userService.saveUser(request.getClientId(), request.getChatId());
-                user = userService.findUser(request.getClientId());
+                userService.saveUser(message.getFrom().getId(), message.getChatId());
+                user = userService.findUser(message.getFrom().getId());
                 adviceService.setAdvice(user, true);
             }
             content.setText("Как настроение?");
@@ -62,9 +63,9 @@ public class BotCommandHandler {
         return Optional.empty();
     }
 
-    public Optional<Content> handleCallback(Request request) {
-        var mood =  moodService.findMood(request.getMoodId());
-        var user =  userService.findUser(request.getClientId());
+    public Optional<Content> handleCallback(CallbackQuery callbackQuery) {
+        var mood =  moodService.findMood(Long.valueOf(callbackQuery.getData()));
+        var user =  userService.findUser(callbackQuery.getFrom().getId());
         return moodService.chooseMood(user, mood);
     }
 }

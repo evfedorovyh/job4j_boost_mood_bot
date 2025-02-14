@@ -5,11 +5,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotOptions;
+import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import ru.job4j.bmb.content.Content;
-import ru.job4j.bmb.content.GetRequest;
 import ru.job4j.bmb.content.SendContent;
 import ru.job4j.bmb.content.SendContentException;
-import ru.job4j.bmb.model.Request;
 import ru.job4j.bmb.model.UserEvent;
 import ru.job4j.bmb.services.AchievementService;
 import ru.job4j.bmb.services.AdviceService;
@@ -18,7 +20,7 @@ import java.util.List;
 
 @Service
 @Conditional(OnFakeCondition.class)
-public class TelegramBotServiceFake implements SendContent, GetRequest, ApplicationListener<UserEvent> {
+public class TelegramBotServiceFake implements LongPollingBot, SendContent, ApplicationListener<UserEvent> {
     private final BotCommandHandler handler;
     private final AdviceService adviceService;
     private final ReminderService reminderService;
@@ -35,12 +37,12 @@ public class TelegramBotServiceFake implements SendContent, GetRequest, Applicat
     }
 
     @Override
-    public void getRequest(Request request) {
-        if (request.getMoodId() != null) {
-            handler.handleCallback(request)
+    public void onUpdateReceived(Update update) {
+        if (update.hasCallbackQuery()) {
+            handler.handleCallback(update.getCallbackQuery())
                     .ifPresent(this::sendContent);
-        } else if (request.getCommand() != null) {
-            handler.handleCommands(request)
+        } else if (update.hasMessage() && update.getMessage().getText() != null) {
+            handler.handleCommands(update.getMessage())
                     .ifPresent(this::sendContent);
         }
     }
@@ -77,5 +79,25 @@ public class TelegramBotServiceFake implements SendContent, GetRequest, Applicat
         for (var content : listContent) {
             sendContent(content);
         }
+    }
+
+    @Override
+    public BotOptions getOptions() {
+        return null;
+    }
+
+    @Override
+    public void clearWebhook() throws TelegramApiRequestException {
+
+    }
+
+    @Override
+    public String getBotUsername() {
+        return "";
+    }
+
+    @Override
+    public String getBotToken() {
+        return "";
     }
 }
