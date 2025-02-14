@@ -54,7 +54,7 @@ public class MoodBotApplication {
     @Conditional(OnFakeCondition.class)
     public CommandLineRunner commandLineRunnerFake(ApplicationContext ctx) {
         return args -> {
-            ctx.getBean(TelegramBotServiceFake.class);
+            var bot = ctx.getBean(TelegramBotServiceFake.class);
         };
     }
 
