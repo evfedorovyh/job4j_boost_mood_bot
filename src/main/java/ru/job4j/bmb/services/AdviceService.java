@@ -1,5 +1,6 @@
 package ru.job4j.bmb.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.*;
 import ru.job4j.bmb.model.User;
@@ -12,32 +13,21 @@ import java.util.Random;
 
 @Service
 public class AdviceService {
-    private final ContentProviderAudio contentProviderAudio;
-    private final ContentProviderImage contentProviderImage;
-    private final ContentProviderText contentProviderText;
+    @Autowired
     private final List<ContentProvider> contents;
     private final UserAdviceRepository userAdviceRepository;
     private final MoodLogService moodLogService;
     private static final Random RND = new Random(System.currentTimeMillis());
 
-    public AdviceService(ContentProviderAudio contentProviderAudio,
-                         ContentProviderImage contentProviderImage,
-                         ContentProviderText contentProviderText,
-                         List<ContentProvider> contents,
+    public AdviceService(List<ContentProvider> contents,
                          UserAdviceRepository userAdviceRepository,
                          MoodLogService moodLogService) {
-        this.contentProviderAudio = contentProviderAudio;
-        this.contentProviderImage = contentProviderImage;
-        this.contentProviderText = contentProviderText;
         this.contents = contents;
         this.userAdviceRepository = userAdviceRepository;
         this.moodLogService = moodLogService;
     }
 
     public Content adviceForUser(User user, boolean goodMood) {
-        contents.add(contentProviderImage);
-        contents.add(contentProviderText);
-        contents.add(contentProviderAudio);
         var index = RND.nextInt(0, contents.size());
         return contents.get(index).byMood(user, goodMood);
     }
