@@ -2,16 +2,14 @@ package ru.job4j.bmb.content;
 
 import org.springframework.stereotype.Component;
 import ru.job4j.bmb.model.User;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
+import static ru.job4j.bmb.MoodBotApplication.RND;
 
 @Component
 public class ContentProviderText implements ContentProvider {
-    private static final Random RND = new Random(System.currentTimeMillis());
 
     @Override
     public Content byMood(User user, boolean goodMood) {

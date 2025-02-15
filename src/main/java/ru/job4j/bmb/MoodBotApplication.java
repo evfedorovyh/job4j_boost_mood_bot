@@ -23,6 +23,7 @@ import ru.job4j.bmb.telegram.*;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -31,6 +32,7 @@ public class MoodBotApplication {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
             .ofPattern("dd-MM-yyyy HH:mm")
             .withZone(ZoneId.systemDefault());
+    public static final Random RND = new Random(System.currentTimeMillis());
 
     public static void main(String[] args) {
         SpringApplication.run(MoodBotApplication.class, args);

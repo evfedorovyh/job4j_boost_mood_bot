@@ -1,5 +1,7 @@
 package ru.job4j.bmb.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.job4j.bmb.content.*;
@@ -9,7 +11,8 @@ import ru.job4j.bmb.repository.UserAdviceRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import static ru.job4j.bmb.MoodBotApplication.RND;
 
 @Service
 public class AdviceService {
@@ -17,7 +20,7 @@ public class AdviceService {
     private final List<ContentProvider> contents;
     private final UserAdviceRepository userAdviceRepository;
     private final MoodLogService moodLogService;
-    private static final Random RND = new Random(System.currentTimeMillis());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdviceService.class);
 
     public AdviceService(List<ContentProvider> contents,
                          UserAdviceRepository userAdviceRepository,
@@ -38,7 +41,7 @@ public class AdviceService {
                 .findFirst()
                 .ifPresent(userAdviceRepository::delete);
         userAdviceRepository.save(new UserAdvice(user, getAdvice));
-        System.out.println("Для пользователя " + user.getClientId() + " \"Совет дня\" установлен " + getAdvice);
+        LOGGER.info("Для пользователя {} \"Совет дня\" установлен {}", user.getClientId(), getAdvice);
     }
 
     public List<Content> advicesForAllUsers() {
